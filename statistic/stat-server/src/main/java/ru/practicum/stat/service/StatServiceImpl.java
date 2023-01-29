@@ -25,13 +25,13 @@ public class StatServiceImpl implements StatService {
     private final StatMapper statMapper;
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void addHit(HitDtoReq hitDtoReq){
+    public void addHit(HitDtoReq hitDtoReq) {
         statRepository.save(statMapper.toStat(hitDtoReq));
         log.debug("Added hit: {}", hitDtoReq);
     }
 
     @Transactional(readOnly = true)
-    public List<ViewStatsDtoResp> getStat(ViewStatsParam statsParam){
+    public List<ViewStatsDtoResp> getStat(ViewStatsParam statsParam) {
         log.debug("Get stat: {}", statsParam);
         List<ViewStatsDtoResp> result;
         var sort = Sort.by("hits").descending();

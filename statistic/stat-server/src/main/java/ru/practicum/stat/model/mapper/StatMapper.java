@@ -13,5 +13,5 @@ public interface StatMapper {
 
     List<ViewStatsDtoResp> toStatsDtoResp(List<StatisticCount> stat);
 
-    Statistic toStat (HitDtoReq hitDtoReq);
+    Statistic toStat(HitDtoReq hitDtoReq);
 }
