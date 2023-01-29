@@ -1,0 +1,8 @@
+ewm-stat-server:
+  url: http://localhost:9090
+
+logging:
+  level:
+    ru:
+      practicum:
+        stat: debug
