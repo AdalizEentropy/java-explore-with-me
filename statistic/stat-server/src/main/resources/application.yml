@@ -1,0 +1,27 @@
+server:
+  port: 9090
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL10Dialect
+        format_sql: true
+  sql:
+    init:
+      mode: always
+
+  #---
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: ${STAT_DATASOURCE_URL}
+    username: ${STAT_DB_USER}
+    password: ${STAT_DB_PASSWORD}
+
+logging:
+  level:
+    ru:
+      practicum:
+        stat: debug
