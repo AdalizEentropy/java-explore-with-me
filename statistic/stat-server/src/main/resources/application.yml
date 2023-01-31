@@ -13,12 +13,25 @@ spring:
     init:
       mode: always
 
-  #---
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${STAT_DATASOURCE_URL}
     username: ${STAT_DB_USER}
     password: ${STAT_DB_PASSWORD}
+
+---
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ewm
+    username: test
+    password: test
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    show-sql: true
 
 logging:
   level:

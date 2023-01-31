@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,6 +17,6 @@ import javax.validation.constraints.NotNull;
 public class ViewStatsDtoReq {
     @NotNull private String start;
     @NotNull private String end;
-    private String[] uris;
+    private List<String> uris;
     private Boolean unique;
 }

@@ -2,30 +2,35 @@ package ru.practicum.stat.client;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import ru.practicum.stat.hit.HitDtoReq;
 import ru.practicum.stat.view.ViewStatsDtoReq;
+import ru.practicum.stat.view.ViewStatsDtoResp;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
 @Slf4j
-public class StatClientImpl {
+public class StatClientImpl implements StatClient {
     private final WebClient webClient;
 
-    public Object addHit(HitDtoReq hitDtoReq) {
+    public ResponseEntity<Void> addHit(HitDtoReq hitDtoReq) {
         log.debug("Adding hit: {}", hitDtoReq);
         return webClient
                 .post()
                 .uri("/hit")
                 .body(BodyInserters.fromValue(hitDtoReq))
                 .retrieve()
-                .bodyToMono(Object.class)
+                .toBodilessEntity()
                 .block();
     }
 
-    public Object getStat(ViewStatsDtoReq viewStatsDtoReq) {
+    public List<ViewStatsDtoResp> getStat(ViewStatsDtoReq viewStatsDtoReq) {
         log.debug("Getting stat: {}", viewStatsDtoReq);
         return webClient
                 .get()
@@ -37,7 +42,7 @@ public class StatClientImpl {
                         .queryParam("unique", viewStatsDtoReq.getUnique())
                         .build())
                 .retrieve()
-                .bodyToMono(Object.class)
+                .bodyToMono(new ParameterizedTypeReference<List<ViewStatsDtoResp>>() {})
                 .block();
     }
 }
