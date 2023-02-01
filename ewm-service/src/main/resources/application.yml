@@ -13,15 +13,40 @@ spring:
     init:
       mode: always
 
-  #---
   datasource:
     driverClassName: org.postgresql.Driver
     url: ${EWM_DATASOURCE_URL}
     username: ${EWM_DB_USER}
     password: ${EWM_DB_PASSWORD}
 
+---
+
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ewm
+    username: test
+    password: test
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    show-sql: true
+
 logging:
   level:
     ru:
       practicum:
         ewm: debug
+
+---
+
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:shareit
+    username: test
+    password: test
+  config:
+    activate:
+      on-profile: testdb
