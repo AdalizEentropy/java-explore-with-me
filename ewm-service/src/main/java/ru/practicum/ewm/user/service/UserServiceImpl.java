@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
             createdUser = userRepository.save(userMapper.toUser(newUserDto));
             log.debug("Saved: {}", createdUser);
         } catch (DataIntegrityViolationException ex) {
-            log.debug("Save user error", ex);
+            log.warn("Save user error", ex);
             throw new DataValidationException(String.format("User with email %s already exist", newUserDto.getEmail()));
         }
 

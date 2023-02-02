@@ -14,6 +14,5 @@ public interface UserMapper {
 
     UserRespDto toUserRespDto(User user);
 
-//    @Mapping(target = "app.name", source = "hitDtoReq.app")
     User toUser(NewUserDto userDto);
 }
