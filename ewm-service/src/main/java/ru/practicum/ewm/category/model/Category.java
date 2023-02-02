@@ -1,16 +1,12 @@
 package ru.practicum.ewm.category.model;
 
+import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = {"id"})
-@RequiredArgsConstructor
 @Entity
 @Table(name = "categories")
 public class Category {
