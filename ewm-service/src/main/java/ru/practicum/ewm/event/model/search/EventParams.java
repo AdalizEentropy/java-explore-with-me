@@ -1,4 +1,4 @@
-package ru.practicum.ewm.event.model;
+package ru.practicum.ewm.event.model.search;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +12,20 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class EventParams {
-    private List<Long> users;
-    private List<EventState> states;
+    private String text;
     private List<Integer> categories;
+    private Boolean paid;
+    private Boolean onlyAvailable = false;
+    private SortType sort = SortType.EVENT_DATE;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime rangeStart;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime rangeEnd;
+
+    public enum SortType {
+        EVENT_DATE,
+        VIEWS
+    }
 }

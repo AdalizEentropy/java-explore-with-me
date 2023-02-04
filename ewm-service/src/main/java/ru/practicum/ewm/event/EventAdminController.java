@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.common.PageParam;
 import ru.practicum.ewm.event.dto.EventFullRespDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminDto;
-import ru.practicum.ewm.event.model.EventParams;
+import ru.practicum.ewm.event.model.search.EventAdminParams;
 import ru.practicum.ewm.event.service.EventAdminService;
 
 import javax.validation.Valid;
@@ -19,7 +19,7 @@ public class EventAdminController {
     private final EventAdminService eventService;
 
     @GetMapping()
-    public List<EventFullRespDto> searchEvents(EventParams eventParams,
+    public List<EventFullRespDto> searchEvents(EventAdminParams eventParams,
                                                @Valid PageParam pageParam) {
         return eventService.searchEvents(eventParams, pageParam);
     }

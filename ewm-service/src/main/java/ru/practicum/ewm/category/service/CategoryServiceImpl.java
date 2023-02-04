@@ -64,18 +64,8 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryRespDto updateCategory(Integer catId, CategoryReqDto categoryReqDto) {
         var category = findCategoryById(catId);
         categoryMapper.updateCategoryFromDto(categoryReqDto, category);
-        Category updatedCategory;
 
-        try {
-            updatedCategory = categoryRepository.save(categoryMapper.toCategory(categoryReqDto));
-            log.debug("Updated: {}", updatedCategory);
-        } catch (DataIntegrityViolationException ex) {
-            log.warn("Update category error", ex);
-            throw new DataValidationException(String.format("Category with name %s already exist",
-                    categoryReqDto.getName()));
-        }
-
-        return categoryMapper.toCategoryRespDto(updatedCategory);
+        return categoryMapper.toCategoryRespDto(category);
     }
 
     @Transactional(readOnly = true)

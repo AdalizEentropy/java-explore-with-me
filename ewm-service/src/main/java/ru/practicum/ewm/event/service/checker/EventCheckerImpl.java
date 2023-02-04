@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.service.checker;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.service.CategoryService;
 import ru.practicum.ewm.event.dto.LocationDto;
 import ru.practicum.ewm.event.model.Event;
@@ -9,6 +10,7 @@ import ru.practicum.ewm.exception.DataValidationException;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
+@Component
 public class EventCheckerImpl implements EventChecker {
     private static final int HOURS_OFFSET = 2;
     private final CategoryService categoryService;

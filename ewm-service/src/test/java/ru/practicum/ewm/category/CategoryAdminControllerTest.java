@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,6 @@ import static ru.practicum.ewm.mapper.TestMapper.toCategoryReqDto;
 import static ru.practicum.ewm.utils.CreateTestCategory.*;
 
 @SpringBootTest
-@Transactional
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @ActiveProfiles("testdb")
@@ -36,6 +36,7 @@ class CategoryAdminControllerTest {
 
     @Test
     @SneakyThrows
+    @Transactional
     void addCategory() {
         mvc.perform(post(URL)
                         .content(objectMapper.writeValueAsString(category))
@@ -64,6 +65,7 @@ class CategoryAdminControllerTest {
 
     @Test
     @SneakyThrows
+    @Transactional
     void addCategory_withExistName_returnConflict() {
         mvc.perform(post(URL)
                         .content(objectMapper.writeValueAsString(category))
@@ -100,6 +102,7 @@ class CategoryAdminControllerTest {
 
     @Test
     @SneakyThrows
+    @Transactional
     void deleteCategory_incorrectId() {
         mvc.perform(post(URL)
                         .content(objectMapper.writeValueAsString(category))
@@ -118,6 +121,7 @@ class CategoryAdminControllerTest {
 
     @Test
     @SneakyThrows
+    @Transactional
     void updateCategory() {
         String response = mvc.perform(post(URL)
                         .content(objectMapper.writeValueAsString(category))
@@ -151,6 +155,7 @@ class CategoryAdminControllerTest {
 
     @Test
     @SneakyThrows
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     void updateCategory_withExistName_returnConflict() {
         mvc.perform(post(URL)
                         .content(objectMapper.writeValueAsString(toCategoryReqDto(createNewCategory2())))
@@ -164,6 +169,8 @@ class CategoryAdminControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         Integer id = JsonPath.read(response, "$.id");
+
+
 
         mvc.perform(patch(URL + "/" + id)
                         .content(objectMapper.writeValueAsString(updateCat))

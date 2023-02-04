@@ -9,11 +9,12 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.common.PageParam;
 import ru.practicum.ewm.event.dao.EventRepository;
+import ru.practicum.ewm.event.dao.specification.EventAdminSpec;
 import ru.practicum.ewm.event.dto.EventFullRespDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.model.EventParams;
+import ru.practicum.ewm.event.model.search.EventAdminParams;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.model.StateAction;
 import ru.practicum.ewm.event.service.checker.EventChecker;
@@ -23,7 +24,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
 import static ru.practicum.ewm.common.PageParam.pageRequest;
-import static ru.practicum.ewm.event.dao.EventSpec.allParams;
 
 @Service
 @Slf4j
@@ -35,8 +35,8 @@ public class EventAdminServiceImpl implements EventAdminService {
     private final EventChecker checker;
 
     @Transactional(readOnly = true)
-    public List<EventFullRespDto> searchEvents(EventParams eventParams, PageParam pageParam) {
-        Specification<Event> spec = allParams(eventParams);
+    public List<EventFullRespDto> searchEvents(EventAdminParams eventParams, PageParam pageParam) {
+        Specification<Event> spec = EventAdminSpec.allParams(eventParams);
         List<Event> result = eventRepository.findAll(spec, pageRequest(pageParam, SORT_TYPE))
                 .toList();
 

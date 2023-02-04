@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.ewm.event.model.Event;
+import ru.practicum.ewm.event.model.EventState;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +23,6 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     Optional<Event> findByIdAndInitiator_Id(Long id, Long initiatorId);
 
     Page<Event> findAll(Specification<Event> spec, Pageable pageable);
+
+    Optional<Event> findByIdAndState(Long id, EventState state);
 }
