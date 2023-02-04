@@ -66,9 +66,16 @@ public class UserServiceImpl implements UserService {
         log.debug("User with id {} was deleted", userId);
     }
 
-    private void findUserById(Long userId) {
-        userRepository.findById(userId)
+    @Transactional(readOnly = true)
+    public User getUserById(Long userId) {
+        return findUserById(userId);
+    }
+
+    private User findUserById(Long userId) {
+        var user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("UserID %s does not exist", userId)));
+
         log.debug("User with id {} was found", userId);
+        return user;
     }
 }

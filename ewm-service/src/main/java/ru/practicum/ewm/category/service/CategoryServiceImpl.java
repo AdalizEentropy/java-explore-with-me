@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public CategoryRespDto updateCategory(Integer catId, CategoryReqDto categoryReqDto) {
-        Category category = findCategoryById(catId);
+        var category = findCategoryById(catId);
         categoryMapper.updateCategoryFromDto(categoryReqDto, category);
         Category updatedCategory;
 
@@ -89,6 +89,11 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(readOnly = true)
     public CategoryRespDto getCategory(Integer catId) {
         return categoryMapper.toCategoryRespDto(findCategoryById(catId));
+    }
+
+    @Transactional(readOnly = true)
+    public Category getCategoryById(Integer catId) {
+        return findCategoryById(catId);
     }
 
     private Category findCategoryById(Integer catId) {

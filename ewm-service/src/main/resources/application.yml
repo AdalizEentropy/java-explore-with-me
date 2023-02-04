@@ -38,6 +38,10 @@ logging:
     ru:
       practicum:
         ewm: debug
+    org:
+      hibernate:
+        type: trace
+        sql: debug
 
 ---
 

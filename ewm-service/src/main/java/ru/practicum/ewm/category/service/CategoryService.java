@@ -2,6 +2,7 @@ package ru.practicum.ewm.category.service;
 
 import ru.practicum.ewm.category.dto.CategoryReqDto;
 import ru.practicum.ewm.category.dto.CategoryRespDto;
+import ru.practicum.ewm.category.model.Category;
 import ru.practicum.ewm.common.PageParam;
 
 import java.util.List;
@@ -17,4 +18,6 @@ public interface CategoryService {
     List<CategoryRespDto> getCategories(PageParam pageParam);
 
     CategoryRespDto getCategory(Integer catId);
+
+    Category getCategoryById(Integer catId);
 }
