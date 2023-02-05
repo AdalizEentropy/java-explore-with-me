@@ -9,11 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.category.service.CategoryService;
 import ru.practicum.ewm.common.PageParam;
 import ru.practicum.ewm.event.dao.EventRepository;
-import ru.practicum.ewm.event.dto.*;
+import ru.practicum.ewm.event.dto.EventFullRespDto;
+import ru.practicum.ewm.event.dto.EventRespDto;
+import ru.practicum.ewm.event.dto.NewEventReqDto;
+import ru.practicum.ewm.event.dto.UpdateEventReqDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.model.EventRequestStatusReq;
-import ru.practicum.ewm.event.model.EventRequestStatusResp;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.service.checker.EventChecker;
 import ru.practicum.ewm.exception.DataValidationException;
@@ -24,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.practicum.ewm.common.PageParam.pageRequest;
+import static ru.practicum.ewm.event.model.EventState.PENDING;
 
 @Service
 @Slf4j
@@ -99,18 +101,10 @@ public class EventUserServiceImpl implements EventUserService {
         checker.checkLocation(event, eventDto.getLocation());
 
         // Update event
+        event.setState(PENDING);
         eventMapper.updateEventFromDto(eventDto, event);
 
         return eventMapper.toEventFullRespDto(event);
-    }
-
-    @Transactional(readOnly = true)
-    public List<RequestRespDto> getEventRequests(Long userId, Long eventId) {
-        return null;
-    }
-
-    public EventRequestStatusResp editEventRequests(Long userId, Long eventId, EventRequestStatusReq eventRequestStatusReq) {
-        return null;
     }
 
     private Event findEventById(Long eventId, Long userId) {

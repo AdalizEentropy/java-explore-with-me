@@ -14,16 +14,20 @@ import ru.practicum.ewm.event.dto.EventFullRespDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
 import ru.practicum.ewm.event.model.Event;
-import ru.practicum.ewm.event.model.search.EventAdminParams;
 import ru.practicum.ewm.event.model.EventState;
 import ru.practicum.ewm.event.model.StateAction;
+import ru.practicum.ewm.event.model.search.EventAdminParams;
 import ru.practicum.ewm.event.service.checker.EventChecker;
 import ru.practicum.ewm.exception.DataValidationException;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.practicum.ewm.common.PageParam.pageRequest;
+import static ru.practicum.ewm.event.model.EventState.CANCELED;
+import static ru.practicum.ewm.event.model.EventState.PUBLISHED;
+import static ru.practicum.ewm.event.model.StateAction.PUBLISH_EVENT;
 
 @Service
 @Slf4j
@@ -52,10 +56,10 @@ public class EventAdminServiceImpl implements EventAdminService {
         var event = findEvent(eventId);
 
         // Check state
-        if (event.getState() == EventState.PUBLISHED) {
+        if (event.getState() == PUBLISHED) {
             throw new DataValidationException("Only pending or canceled events can be changed");
         }
-        if (eventDto.getStateAction() == StateAction.PUBLISH_EVENT
+        if (eventDto.getStateAction() == PUBLISH_EVENT
                 && event.getState() != EventState.PENDING) {
             throw new DataValidationException("Only pending events can be published");
         }
@@ -66,17 +70,34 @@ public class EventAdminServiceImpl implements EventAdminService {
         // Update location if changed
         checker.checkLocation(event, eventDto.getLocation());
 
+        // Update status
+        changeStatus(eventDto.getStateAction(), event);
+
         // Update events
         eventMapper.updateEventFromDto(eventDto, event);
 
         return eventMapper.toEventFullRespDto(event);
     }
 
-    private Event findEvent(Long eventId) {
+    public Event findEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("EventID %s does not exist", eventId)));
 
         log.debug("Event with id {} was found", eventId);
         return event;
+    }
+
+    private static void changeStatus(StateAction state, Event event) {
+        switch (state) {
+            case PUBLISH_EVENT:
+                event.setState(PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+                break;
+            case REJECT_EVENT:
+                event.setState(CANCELED);
+                break;
+            default:
+                throw new DataValidationException("Incorrect state action");
+        }
     }
 }

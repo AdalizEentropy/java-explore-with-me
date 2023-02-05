@@ -48,16 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional(rollbackFor = SQLException.class, isolation = Isolation.SERIALIZABLE)
     public void removeCategory(Integer catId) {
         findCategoryById(catId);
-
-        try {
-            categoryRepository.deleteById(catId);
-
-            //TODO change exception
-        } catch (Exception ex) {
-            log.warn("Delete category error", ex);
-            throw new DataValidationException("The category is not empty");
-        }
-        log.debug("Category with id {} was deleted", catId);
+        categoryRepository.deleteById(catId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)

@@ -4,14 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.common.PageParam;
-import ru.practicum.ewm.event.model.EventRequestStatusReq;
-import ru.practicum.ewm.event.model.EventRequestStatusResp;
-import ru.practicum.ewm.event.dto.RequestRespDto;
 import ru.practicum.ewm.event.dto.EventFullRespDto;
 import ru.practicum.ewm.event.dto.EventRespDto;
 import ru.practicum.ewm.event.dto.NewEventReqDto;
 import ru.practicum.ewm.event.dto.UpdateEventReqDto;
+import ru.practicum.ewm.event.model.EventRequestStatusReq;
+import ru.practicum.ewm.event.model.EventRequestStatusResp;
 import ru.practicum.ewm.event.service.EventUserService;
+import ru.practicum.ewm.request.dto.RequestRespDto;
+import ru.practicum.ewm.request.service.RequestService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EventUserController {
     private final EventUserService eventUserService;
+    private final RequestService requestService;
 
     @PostMapping("/{userId}/events")
     @ResponseStatus(code = HttpStatus.CREATED)
@@ -52,13 +54,13 @@ public class EventUserController {
     @GetMapping("/{userId}/events/{eventId}/requests")
     public List<RequestRespDto> getEventRequests(@PathVariable Long userId,
                                                  @PathVariable Long eventId) {
-        return eventUserService.getEventRequests(userId, eventId);
+        return requestService.getEventRequests(userId, eventId);
     }
 
     @PatchMapping("/{userId}/events/{eventId}/requests")
     public EventRequestStatusResp editEventRequests(@PathVariable Long userId,
                                                     @PathVariable Long eventId,
-                                                    @NotNull @RequestBody EventRequestStatusReq eventRequestStatusReq) {
-        return eventUserService.editEventRequests(userId, eventId, eventRequestStatusReq);
+                                                    @NotNull @RequestBody EventRequestStatusReq eventStatus) {
+        return requestService.editEventRequests(userId, eventId, eventStatus);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -27,6 +28,15 @@ public class ExceptionApiHandler {
         Object value = fieldErrorResult.getRejectedValue();
 
         var message = String.format("Field: %s. Error: %s. Value: %s", field, error, value);
+        log.warn(message);
+
+        return getErrorMessage(BAD_REQUEST, "Incorrectly made request.", message);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(BAD_REQUEST)
+    public ErrorMessage handleDataForbiddenException(final MissingServletRequestParameterException e) {
+        String message = Objects.requireNonNull(e.getMessage());
         log.warn(message);
 
         return getErrorMessage(BAD_REQUEST, "Incorrectly made request.", message);

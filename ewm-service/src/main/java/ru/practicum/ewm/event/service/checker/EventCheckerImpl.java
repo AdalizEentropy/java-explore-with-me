@@ -16,25 +16,29 @@ public class EventCheckerImpl implements EventChecker {
     private final CategoryService categoryService;
 
     public void checkCategory(Event event, Integer categoryId) {
-        if (!categoryId.equals(event.getCategory().getId())) {
+        if (categoryId != null && !categoryId.equals(event.getCategory().getId())) {
             var category = categoryService.getCategoryById(categoryId);
             event.setCategory(category);
         }
     }
 
     public void checkLocation(Event event, LocationDto locationDto) {
-        if (locationDto.getLon().equals(event.getLocation().getLon()) ||
-                locationDto.getLat().equals(event.getLocation().getLat())) {
-            event.getLocation().setLon(locationDto.getLon());
-            event.getLocation().setLat(locationDto.getLat());
+        if (locationDto != null) {
+            if (!locationDto.getLon().equals(event.getLocation().getLon())) {
+                event.getLocation().setLon(locationDto.getLon());
+            }
+            if (!locationDto.getLat().equals(event.getLocation().getLat())) {
+                event.getLocation().setLat(locationDto.getLat());
+            }
         }
     }
 
     public void checkEventDate(LocalDateTime eventDate) {
-        if (eventDate.isBefore(LocalDateTime.now().plusHours(HOURS_OFFSET))) {
-            throw new DataValidationException(String.format(
-                    "Event date must not be earlier that %s hours from now",
-                    HOURS_OFFSET));
+        if (eventDate != null
+                && eventDate.isBefore(LocalDateTime.now().plusHours(HOURS_OFFSET))) {
+                throw new DataValidationException(String.format(
+                        "Event date must not be earlier that %s hours from now",
+                        HOURS_OFFSET));
         }
     }
 }

@@ -29,7 +29,13 @@ public class CategoryAdminController {
     @DeleteMapping("/{catId}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void removeCategory(@PathVariable Integer catId) {
-        categoryService.removeCategory(catId);
+        try {
+            categoryService.removeCategory(catId);
+            log.debug("Category with id {} was deleted", catId);
+        } catch (DataIntegrityViolationException ex) {
+            log.warn("Delete category error", ex);
+            throw new DataValidationException("The category is not empty");
+        }
     }
 
     @PatchMapping("/{catId}")

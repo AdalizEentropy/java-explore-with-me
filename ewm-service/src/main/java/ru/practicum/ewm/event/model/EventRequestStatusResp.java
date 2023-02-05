@@ -3,7 +3,7 @@ package ru.practicum.ewm.event.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.ewm.event.dto.RequestRespDto;
+import ru.practicum.ewm.request.dto.RequestRespDto;
 
 import java.util.List;
 

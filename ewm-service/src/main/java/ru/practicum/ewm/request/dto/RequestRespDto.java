@@ -1,9 +1,9 @@
-package ru.practicum.ewm.event.dto;
+package ru.practicum.ewm.request.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.practicum.ewm.event.model.EventState;
+import ru.practicum.ewm.request.model.RequestStatus;
 
 import java.time.LocalDateTime;
 
@@ -15,5 +15,5 @@ public class RequestRespDto {
     private LocalDateTime created;
     private Long event;
     private Long requester;
-    private EventState status;
+    private RequestStatus status;
 }
