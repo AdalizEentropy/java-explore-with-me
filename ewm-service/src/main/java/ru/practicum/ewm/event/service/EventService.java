@@ -9,7 +9,8 @@ import java.util.List;
 
 public interface EventService {
 
-    List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam);
+    List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam,
+                              String uri, String ip);
 
     EventFullRespDto getById(Long id, String uri, String ip);
 }

@@ -25,7 +25,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.practicum.ewm.common.PageParam.pageRequest;
+import static ru.practicum.ewm.event.model.EventState.CANCELED;
 import static ru.practicum.ewm.event.model.EventState.PENDING;
+import static ru.practicum.ewm.event.model.StateAction.CANCEL_REVIEW;
 
 @Service
 @Slf4j
@@ -101,7 +103,11 @@ public class EventUserServiceImpl implements EventUserService {
         checker.checkLocation(event, eventDto.getLocation());
 
         // Update event
-        event.setState(PENDING);
+        if (eventDto.getStateAction() == CANCEL_REVIEW) {
+            event.setState(CANCELED);
+        } else {
+            event.setState(PENDING);
+        }
         eventMapper.updateEventFromDto(eventDto, event);
 
         return eventMapper.toEventFullRespDto(event);

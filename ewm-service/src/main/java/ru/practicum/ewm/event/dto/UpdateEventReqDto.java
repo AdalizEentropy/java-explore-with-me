@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ru.practicum.ewm.event.model.StateAction;
 
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -34,4 +35,6 @@ public class UpdateEventReqDto {
     private Boolean paid;
 
     private Boolean requestModeration;
+
+    private StateAction stateAction;
 }

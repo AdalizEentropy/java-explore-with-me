@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.EventRequestStatusReq;
 import ru.practicum.ewm.event.model.EventRequestStatusResp;
 import ru.practicum.ewm.event.service.EventAdminService;
@@ -20,6 +19,7 @@ import ru.practicum.ewm.user.service.UserService;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.event.model.EventState.PUBLISHED;
 import static ru.practicum.ewm.request.model.RequestStatus.*;
@@ -79,17 +79,13 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("RequestId %s does not exist",
                         requestId)));
 
-        request.setStatus(REJECTED);
+        request.setStatus(CANCELED);
 
         return mapper.toRequestRespDto(request);
     }
 
     @Transactional(readOnly = true)
     public List<RequestRespDto> getEventRequests(Long userId, Long eventId) {
-        // Check event initiator
-        var event = eventService.findEvent(eventId);
-        checkInitiatorEvent(userId, event);
-
         return mapper.toRequestsRespDto(requestRepository.findAllByEvent_Id(eventId));
     }
 
@@ -98,40 +94,38 @@ public class RequestServiceImpl implements RequestService {
         // Check event
         var event = eventService.findEvent(eventId);
 
-        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
-            //TODO что возвращать?
-            return null;
-        }
+        // Limit was reached
         if (eventStatus.getStatus() == CONFIRMED
                 && event.getParticipantLimit().equals(getReqCount(eventId))) {
             throw new DataValidationException("Event participant limit was reached");
         }
 
-        /*List<Request> requests = requestRepository.findAllById(eventStatus.getRequestIds());
-
-        var limitLeft = new AtomicInteger(event.getParticipantLimit()-getReqCount(eventId));
-        Map<Long, Integer> lim = new HashMap<>();
-        for (Request req : requests) {
-            lim.put(req.getId(), limitLeft.decrementAndGet());
+        // Confirmation not necessary
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            throw new DataValidationException("Confirmation not necessary");
         }
 
-        var ll = List.of(lim).stream().map(m -> m.values().stream().filter(v -> v > 0)).collect(Collectors.toList());
+        List<Request> requests = requestRepository.findAllById(eventStatus.getRequestIds());
 
+        if (requests.stream()
+                .anyMatch(req -> req.getStatus() != PENDING)) {
+            throw new DataValidationException("Request status could not be changed");
+        }
 
-        Map<Long, AtomicInteger> EVENT_REQUESTS_LEFT = new HashMap<>();
-        requests.forEach(r -> EVENT_REQUESTS_LEFT.put(r.getId(), null));
+        // Confirm until limit
+        switch (eventStatus.getStatus()) {
+            case CONFIRMED:
+                int limit = event.getParticipantLimit() - getReqCount(eventId);
+                confirmRequests(requests, limit);
+                break;
+            case REJECTED:
+                rejectRequests(requests);
+                break;
+            default:
+                throw new DataValidationException("Unexpected event status");
+        }
 
-        List.of(EVENT_REQUESTS_LEFT).stream()
-                .map(m -> m.put())
-
-        var values = requests.stream()
-                .filter(r -> r.getStatus() == PENDING)
-                .flatMap(r -> limitLeft.decrementAndGet())
-                .allMatch(v -> v >= 0);
-
-        EVENT_REQUESTS_LEFT.putIfAbsent(eventId, new AtomicInteger(event.getParticipantLimit()-getReqCount(eventId)));*/
-
-        return null;
+        return fillEventReqStatus(requests);
     }
 
     public List<RequestCount> getRequestCount(List<Long> eventId) {
@@ -151,11 +145,33 @@ public class RequestServiceImpl implements RequestService {
         }
     }
 
-    private static void checkInitiatorEvent(Long userId, Event event) {
-        if (userId.equals(event.getInitiator().getId())) {
-            throw new DataValidationException(String.format("UserId %s does not have eventId %s",
-                    userId,
-                    event.getId()));
+    private static void confirmRequests(List<Request> requests, int limit) {
+        int limitLeft = limit;
+        for (Request request : requests) {
+            if (limitLeft >= 0) {
+                request.setStatus(CONFIRMED);
+                limitLeft--;
+            } else {
+                request.setStatus(REJECTED);
+            }
         }
+    }
+
+    private static void rejectRequests(List<Request> requests) {
+        requests.forEach(req -> req.setStatus(REJECTED));
+    }
+
+    private EventRequestStatusResp fillEventReqStatus(List<Request> requests) {
+        var confirmed = requests.stream()
+                .filter(req -> req.getStatus() == CONFIRMED)
+                .collect(Collectors.toList());
+
+        var rejected = requests.stream()
+                .filter(req -> req.getStatus() == REJECTED)
+                .collect(Collectors.toList());
+
+        return new EventRequestStatusResp()
+                .setConfirmedRequests(mapper.toRequestsRespDto(confirmed))
+                .setRejectedRequests(mapper.toRequestsRespDto(rejected));
     }
 }

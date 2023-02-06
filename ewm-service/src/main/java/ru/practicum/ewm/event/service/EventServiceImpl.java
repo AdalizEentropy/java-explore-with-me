@@ -23,7 +23,6 @@ import ru.practicum.stat.view.ViewStatsParam;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -46,10 +45,9 @@ public class EventServiceImpl implements EventService {
     private String appName;
 
     @Transactional(readOnly = true)
-    public List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam) {
+    public List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam, String uri, String ip) {
         //TODO
-        //информация о каждом событии должна включать в себя количество просмотров и количество уже одобренных заявок на участие
-        //информацию о том, что по этому эндпоинту был осуществлен и обработан запрос, нужно сохранить в сервисе статистики
+        //информация о каждом событии должна включать в себя количество просмотров
         Sort sortType;
         if (EVENT_DATE == eventParams.getSort()) {
             sortType = Sort.by("eventDate").descending();
@@ -58,27 +56,34 @@ public class EventServiceImpl implements EventService {
             sortType = Sort.by("viewCount").descending();
         }
 
+        // Find events with params
         Specification<Event> spec = EventSpec.allParams(eventParams, PUBLISHED);
-        List<Event> result = eventRepository.findAll(spec, pageRequest(pageParam, sortType))
+        List<Event> events = eventRepository.findAll(spec, pageRequest(pageParam, sortType))
                 .toList();
 
-        List<Long> eventsId = result.stream().map(Event::getId).collect(Collectors.toList());
-        Map<Long, Integer> requestCount = new HashMap<>();
-        requestService.getRequestCount(eventsId)
-                .forEach(reqCount -> requestCount.put(reqCount.getEventId(), reqCount.getReqCount()));
+        // Find requests
+        List<EventRespDto> eventsDto = eventMapper.toEventsRespDto(events);
+        mapRequestCount(eventsDto);
 
+        // Show only available
         if (eventParams.getOnlyAvailable()) {
-            result.stream()
-                    .filter(event -> event.getParticipantLimit() > requestCount.get(event.getId()));
+            Map<Long, Event> tmpEventMap = events.stream()
+                    .collect(Collectors.toMap(Event::getId, event -> event));
+            var result = eventsDto.stream()
+                    .filter(event -> tmpEventMap.get(event.getId())
+                            .getParticipantLimit() > event.getConfirmedRequests())
+                    .collect(Collectors.toList());
+            eventsDto = result;
         }
 
-        return eventMapper.toEventsRespDto(result);
+        // Add view
+        statClient.addHit(createHitDtoReq(uri, ip));
+
+        return eventsDto;
     }
 
     @Transactional(readOnly = true)
     public EventFullRespDto getById(Long id, String uri, String ip) {
-        //TODO refactor!!!
-
         Event event = eventRepository.findByIdAndState(id, PUBLISHED)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Published eventID %s does not exist",
                         id)));
@@ -92,13 +97,13 @@ public class EventServiceImpl implements EventService {
         var viewCount = statClient.getStat(statData)
                 .stream()
                 .filter(Objects::nonNull)
-                .findFirst()
-                .map(ViewStatsDtoResp::getHits);
+                .map(ViewStatsDtoResp::getHits)
+                .count();
 
         // Add view
         statClient.addHit(createHitDtoReq(uri, ip));
 
-        return eventMapper.toEventFullRespDto(event, reqCount, viewCount.orElse(null));
+        return eventMapper.toEventFullRespDto(event, reqCount, viewCount);
     }
 
     private HitDtoReq createHitDtoReq(String uri, String ip) {
@@ -115,5 +120,18 @@ public class EventServiceImpl implements EventService {
                 .setStart(start)
                 .setEnd(LocalDateTime.now())
                 .setUnique(true);
+    }
+
+    private void mapRequestCount(List<EventRespDto> events) {
+        Map<Long, EventRespDto> tmpEventMap = events.stream()
+                .collect(Collectors.toMap(EventRespDto::getId, event -> event));
+
+        List<Long> eventsId = events.stream()
+                .map(EventRespDto::getId)
+                .collect(Collectors.toList());
+
+        requestService.getRequestCount(eventsId)
+                .forEach(c -> tmpEventMap.get(c.getEventId())
+                        .setConfirmedRequests(c.getReqCount()));
     }
 }

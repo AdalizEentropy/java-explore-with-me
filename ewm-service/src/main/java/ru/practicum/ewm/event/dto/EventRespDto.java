@@ -16,7 +16,7 @@ public class EventRespDto {
     private String title;
     private String annotation;
     private CategoryRespDto category;
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
     private LocalDateTime eventDate;
     private ShortUserDto initiator;
     private boolean paid;

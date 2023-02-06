@@ -23,8 +23,9 @@ public class EventController {
 
     @GetMapping
     public List<EventRespDto> getAll(EventParams eventParams,
-                                     @Valid PageParam pageParam) {
-        return eventService.getAll(eventParams, pageParam);
+                                     @Valid PageParam pageParam,
+                                     HttpServletRequest request) {
+        return eventService.getAll(eventParams, pageParam, request.getRequestURI(), request.getRemoteAddr());
     }
 
     @GetMapping("/{id}")
