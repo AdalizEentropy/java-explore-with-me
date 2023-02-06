@@ -11,6 +11,7 @@ import ru.practicum.ewm.event.dto.EventRespDto;
 import ru.practicum.ewm.event.model.search.EventParams;
 import ru.practicum.ewm.event.service.EventService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -27,7 +28,8 @@ public class EventController {
     }
 
     @GetMapping("/{id}")
-    public EventFullRespDto getById(@PathVariable Long id) {
-        return eventService.getById(id);
+    public EventFullRespDto getById(@PathVariable Long id,
+                                    HttpServletRequest request) {
+        return eventService.getById(id, request.getRequestURI(), request.getRemoteAddr());
     }
 }

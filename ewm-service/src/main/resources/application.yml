@@ -1,6 +1,9 @@
 server:
   port: 8080
 
+app:
+  name: ewm-service
+
 spring:
   jpa:
     hibernate:

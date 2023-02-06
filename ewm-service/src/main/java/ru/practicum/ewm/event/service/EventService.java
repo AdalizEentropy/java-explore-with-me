@@ -11,5 +11,5 @@ public interface EventService {
 
     List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam);
 
-    EventFullRespDto getById(Long id);
+    EventFullRespDto getById(Long id, String uri, String ip);
 }

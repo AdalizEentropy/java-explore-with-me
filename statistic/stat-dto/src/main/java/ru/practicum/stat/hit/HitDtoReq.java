@@ -5,15 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Accessors(chain = true)
 @ToString
 public class HitDtoReq {
     @NotBlank(message = "Empty app")
@@ -23,7 +24,8 @@ public class HitDtoReq {
     private String uri;
 
     @NotNull(message = "Empty ip")
-    @Pattern(regexp = "^(\\d{1,3}\\.){3}\\d{1,3}$", message = "Incorrect ip address")
+    //TODO локально вместо ip приходит какая-то лажа
+//    @Pattern(regexp = "^(\\d{1,3}\\.){3}\\d{1,3}$", message = "Incorrect ip address")
     private String ip;
 
     @NotNull(message = "Empty timestamp")

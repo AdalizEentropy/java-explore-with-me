@@ -18,7 +18,7 @@ public class EventFullRespDto {
     private String annotation;
     private String description;
     private CategoryRespDto category;
-    private Long confirmedRequests;
+    private Integer confirmedRequests;
     private LocationDto location;
     private LocalDateTime createdOn;
     private LocalDateTime eventDate;

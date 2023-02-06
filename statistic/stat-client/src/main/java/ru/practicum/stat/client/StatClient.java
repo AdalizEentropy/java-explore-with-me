@@ -1,7 +1,11 @@
 package ru.practicum.stat.client;
 
+import org.springframework.http.ResponseEntity;
 import ru.practicum.stat.hit.HitDtoReq;
-import ru.practicum.stat.view.ViewStatsDtoReq;
+import ru.practicum.stat.view.ViewStatsDtoResp;
+import ru.practicum.stat.view.ViewStatsParam;
+
+import java.util.List;
 
 public interface StatClient {
 
@@ -11,13 +15,13 @@ public interface StatClient {
      *
      * @param hitDtoReq the name of the service, uri and ip of the user.
      */
-    Object addHit(HitDtoReq hitDtoReq);
+    ResponseEntity<Void> addHit(HitDtoReq hitDtoReq);
 
     /**
      * Get the statistics of visits
      *
-     * @param viewStatsDtoReq parameters of search
+     * @param statsDto parameters of search
      * @return list of visit statistics group by app and uri
      */
-    Object getStat(ViewStatsDtoReq viewStatsDtoReq);
+    List<ViewStatsDtoResp> getStat(ViewStatsParam statsDto);
 }

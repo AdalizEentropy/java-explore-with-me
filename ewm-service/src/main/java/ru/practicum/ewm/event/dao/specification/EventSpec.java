@@ -24,14 +24,14 @@ public class EventSpec {
     private static Specification<Event> annotationLike(final String text) {
         return (root, query, builder) ->
                 text != null && !text.isBlank()
-                        ? builder.like(root.get("annotation"), "%"+text+"%")
+                        ? builder.like(builder.lower(root.get("annotation")), "%" + text.toLowerCase() + "%")
                         : builder.conjunction();
     }
 
     private static Specification<Event> descriptionLike(final String text) {
         return (root, query, builder) ->
                 text != null && !text.isBlank()
-                        ? builder.like(root.get("description"), "%"+text+"%")
+                        ? builder.like(builder.lower(root.get("description")), "%" + text.toLowerCase() + "%")
                         : builder.conjunction();
     }
 
@@ -59,12 +59,4 @@ public class EventSpec {
                         ? builder.between(root.get("eventDate"), rangeStart, rangeEnd)
                         : builder.greaterThan(root.get("eventDate"), LocalDateTime.now());
     }
-
-    //TODO добавить расчет, что событие доступно
-    /*private static Specification<Event> onlyAvailable(final Boolean available) {
-        return (root, query, builder) ->
-                available != null
-                        ? builder.equal(root.get("participantLimit"), )
-                        : builder.greaterThan(root.get("participantLimit"), );
-    }*/
 }

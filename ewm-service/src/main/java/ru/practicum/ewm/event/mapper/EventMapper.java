@@ -14,6 +14,10 @@ public interface EventMapper {
     @Mapping(target = "category.id", source = "eventDto.category")
     Event toEvent(Long userId, Long locationId, NewEventReqDto eventDto);
 
+    @Mapping(target = "confirmedRequests", source = "reqCount")
+    @Mapping(target = "views", source = "viewCount")
+    EventFullRespDto toEventFullRespDto(Event event, int reqCount, Long viewCount);
+
     EventFullRespDto toEventFullRespDto(Event event);
 
     List<EventFullRespDto> toEventsFullRespDto(List<Event> event);
