@@ -1,8 +1,18 @@
 ewm-stat-server:
-  url: http://localhost:9090
+  url: ${STATS_URL}
 
 logging:
   level:
     ru:
       practicum:
         stat: debug
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
+
+ewm-stat-server:
+  url: http://localhost:9090

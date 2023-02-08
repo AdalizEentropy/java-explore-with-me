@@ -22,7 +22,7 @@ spring:
     password: ${EWM_DB_PASSWORD}
 
 ewm-stat-server:
-  url: http://localhost:9090
+  url: ${STATS_URL}
 
 ---
 
@@ -47,6 +47,9 @@ logging:
       hibernate:
         type: trace
         sql: debug
+
+ewm-stat-server:
+  url: http://localhost:9090
 
 ---
 

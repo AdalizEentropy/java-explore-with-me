@@ -23,19 +23,19 @@ import ru.practicum.stat.view.ViewStatsParam;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static ru.practicum.ewm.common.PageParam.pageRequest;
 import static ru.practicum.ewm.event.model.EventState.PUBLISHED;
-import static ru.practicum.ewm.event.model.search.EventParams.SortType.EVENT_DATE;
+import static ru.practicum.ewm.event.model.search.EventParams.SortType.VIEWS;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EventServiceImpl implements EventService {
+    private static final Pattern PATTERN = Pattern.compile("\\d+");
     private final EventRepository eventRepository;
     private final RequestService requestService;
     private final EventMapper eventMapper;
@@ -46,15 +46,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     public List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam, String uri, String ip) {
-        //TODO
-        //информация о каждом событии должна включать в себя количество просмотров
-        Sort sortType;
-        if (EVENT_DATE == eventParams.getSort()) {
-            sortType = Sort.by("eventDate").descending();
-        } else {
-            //TODO количество просмотров
-            sortType = Sort.by("viewCount").descending();
-        }
+        Sort sortType = Sort.by("eventDate").descending();
 
         // Find events with params
         Specification<Event> spec = EventSpec.allParams(eventParams, PUBLISHED);
@@ -69,11 +61,19 @@ public class EventServiceImpl implements EventService {
         if (eventParams.getOnlyAvailable()) {
             Map<Long, Event> tmpEventMap = events.stream()
                     .collect(Collectors.toMap(Event::getId, event -> event));
-            var result = eventsDto.stream()
+            eventsDto = eventsDto.stream()
                     .filter(event -> tmpEventMap.get(event.getId())
                             .getParticipantLimit() > event.getConfirmedRequests())
                     .collect(Collectors.toList());
-            eventsDto = result;
+        }
+
+        // Find views
+        var views = getViewsCount(events);
+        eventsDto.forEach(e -> e.setViews(views.get(e.getId())));
+
+        if (eventParams.getSort() == VIEWS) {
+            eventsDto = eventsDto.stream().sorted(Comparator.comparing(EventRespDto::getViews)).
+                    collect(Collectors.toList());
         }
 
         // Add view
@@ -133,5 +133,28 @@ public class EventServiceImpl implements EventService {
         requestService.getRequestCount(eventsId)
                 .forEach(c -> tmpEventMap.get(c.getEventId())
                         .setConfirmedRequests(c.getReqCount()));
+    }
+
+    private Map<Long, Long> getViewsCount(List<Event> events) {
+        // Prepare data for stats
+        List<String> uris = events.stream()
+                .map(Event::getId)
+                .map(id -> String.valueOf("/events/" + id))
+                .collect(Collectors.toList());
+        Optional<LocalDateTime> startTime = events.stream()
+                .map(Event::getPublishedOn)
+                .filter(Objects::nonNull)
+                .min(Comparator.naturalOrder());
+        var statData = createViewStatsDtoReq(uris, startTime.orElseGet(() -> LocalDateTime
+                .now()
+                .minusYears(100)));
+        List<ViewStatsDtoResp> views = statClient.getStat(statData);
+
+        // Create map for events
+        Map<Long, Long> tmpViewsMap = new HashMap<>();
+        views.forEach(v -> tmpViewsMap.put(Long.parseLong(PATTERN.matcher(v.getUri()).group(0)),
+                v.getHits()));
+
+        return tmpViewsMap;
     }
 }

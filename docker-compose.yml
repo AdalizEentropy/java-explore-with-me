@@ -9,6 +9,7 @@ services:
       - stats-db
     environment:
       - SERVER_PORT=9090
+      - STATS_URL=http://stats-server:9090
       - STAT_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm-stat
       - STAT_DB_USER=test
       - STAT_DB_PASSWORD=test
@@ -38,8 +39,9 @@ services:
     depends_on:
       - ewm-db
     environment:
+      - STATS_URL=http://stats-server:9090
       - SERVER_PORT=8080
-      - EWM_DATASOURCE_URL=jdbc:postgresql://ewm-db:5433/ewm-service
+      - EWM_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-service
       - EWM_DB_USER=test
       - EWM_DB_PASSWORD=test
     volumes:
@@ -50,7 +52,7 @@ services:
     image: postgres:14-alpine
     container_name: ewm-service-db
     ports:
-      - "6542:5433"
+      - "6542:5432"
     environment:
       - POSTGRES_DB=ewm-service
       - POSTGRES_USER=test
