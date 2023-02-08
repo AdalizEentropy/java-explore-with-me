@@ -35,7 +35,7 @@ public class EventSpec {
                         : builder.conjunction();
     }
 
-    private static Specification<Event> stateEqual(final EventState state){
+    private static Specification<Event> stateEqual(final EventState state) {
         return (root, query, builder) -> builder.equal(root.get("state"), state);
     }
 

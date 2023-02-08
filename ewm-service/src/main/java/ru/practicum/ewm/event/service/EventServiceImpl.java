@@ -72,8 +72,9 @@ public class EventServiceImpl implements EventService {
         eventsDto.forEach(e -> e.setViews(views.get(e.getId())));
 
         if (eventParams.getSort() == VIEWS) {
-            eventsDto = eventsDto.stream().sorted(Comparator.comparing(EventRespDto::getViews)).
-                    collect(Collectors.toList());
+            eventsDto = eventsDto.stream()
+                    .sorted(Comparator.comparing(EventRespDto::getViews))
+                    .collect(Collectors.toList());
         }
 
         // Add view
