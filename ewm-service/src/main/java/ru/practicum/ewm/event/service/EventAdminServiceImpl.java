@@ -87,6 +87,10 @@ public class EventAdminServiceImpl implements EventAdminService {
         return event;
     }
 
+    public List<Event> findEvents(List<Long> ids) {
+        return eventRepository.findAllById(ids);
+    }
+
     private static void changeStatus(AdminStateAction state, Event event) {
         switch (state) {
             case PUBLISH_EVENT:

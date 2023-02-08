@@ -15,4 +15,6 @@ public interface EventAdminService {
     EventFullRespDto editEvent(Long eventId, UpdateEventAdminDto eventDto);
 
     Event findEvent(Long eventId);
+
+    List<Event> findEvents(List<Long> ids);
 }
