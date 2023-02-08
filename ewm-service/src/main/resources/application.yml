@@ -62,3 +62,6 @@ spring:
   config:
     activate:
       on-profile: testdb
+
+ewm-stat-server:
+  url: http://localhost:9090
