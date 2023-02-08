@@ -46,7 +46,7 @@ public class StatServiceImpl implements StatService {
         List<StatisticCount> result;
         var sort = Sort.by("hits").descending();
 
-        if (statsParam.getUnique() != null) {
+        if (statsParam.getUnique() != null && statsParam.getUnique()) {
             if (statsParam.getUris() != null) {
                 result = statRepository.countUrisUniqueIp(statsParam.getStart(),
                         statsParam.getEnd(),

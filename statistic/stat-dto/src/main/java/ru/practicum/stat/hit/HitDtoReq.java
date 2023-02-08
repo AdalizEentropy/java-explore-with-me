@@ -24,8 +24,6 @@ public class HitDtoReq {
     private String uri;
 
     @NotNull(message = "Empty ip")
-    //TODO локально вместо ip приходит какая-то лажа
-//    @Pattern(regexp = "^(\\d{1,3}\\.){3}\\d{1,3}$", message = "Incorrect ip address")
     private String ip;
 
     @NotNull(message = "Empty timestamp")
