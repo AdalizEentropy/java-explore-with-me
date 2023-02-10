@@ -1,13 +1,11 @@
 package ru.practicum.ewm.compilation;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.compilation.dto.CompilationReqDto;
 import ru.practicum.ewm.compilation.dto.CompilationRespDto;
 import ru.practicum.ewm.compilation.service.CompilationService;
-import ru.practicum.ewm.exception.DataValidationException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -33,15 +31,6 @@ public class CompilationAdminController {
     @PatchMapping("/{compId}")
     public CompilationRespDto updateCompilation(@PathVariable Long compId,
                                                 @NotNull @RequestBody CompilationReqDto compilation) {
-        CompilationRespDto compilationResp;
-
-        try {
-            compilationResp = compilationService.updateCompilation(compId, compilation);
-        } catch (DataIntegrityViolationException e) {
-            throw new DataValidationException(String.format("Compilation with title %s already exist",
-                    compilation.getTitle()));
-        }
-
-        return compilationResp;
+        return compilationService.updateCompilation(compId, compilation);
     }
 }

@@ -49,7 +49,8 @@ CREATE TABLE IF NOT EXISTS requests (
     status VARCHAR(10),
     CONSTRAINT fk_requests_to_users FOREIGN KEY(requester_id) REFERENCES users(id),
     CONSTRAINT fk_requests_to_events FOREIGN KEY(event_id) REFERENCES events(id),
-    CONSTRAINT pk_requests PRIMARY KEY (id)
+    CONSTRAINT pk_requests PRIMARY KEY (id),
+    CONSTRAINT requester_event_pk UNIQUE (requester_id, event_id)
 );
 
 CREATE TABLE IF NOT EXISTS compilations (
@@ -63,5 +64,5 @@ CREATE TABLE IF NOT EXISTS compilations (
 CREATE TABLE IF NOT EXISTS compilation_events (
     compilation_id BIGINT NOT NULL REFERENCES compilations (id),
     event_id BIGINT NOT NULL REFERENCES events (id),
-    CONSTRAINT film_genre_pk PRIMARY KEY (compilation_id, event_id)
+    CONSTRAINT compilation_event_pk PRIMARY KEY (compilation_id, event_id)
 );

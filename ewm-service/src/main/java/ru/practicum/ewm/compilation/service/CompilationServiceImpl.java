@@ -69,6 +69,7 @@ public class CompilationServiceImpl implements CompilationService {
         return mapper.toCompilationRespDto(comp);
     }
 
+    @Transactional(readOnly = true)
     public List<CompilationRespDto> getCompilations(PageParam pageParam, Boolean pinned) {
         List<Compilation> compilations;
         if (pinned == null) {

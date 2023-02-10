@@ -1,14 +1,18 @@
 package ru.practicum.ewm.compilation.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import ru.practicum.ewm.event.model.Event;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Data
-@EqualsAndHashCode(of = {"id"})
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Entity
 @Table(name = "compilations")
 public class Compilation {

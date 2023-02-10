@@ -1,7 +1,8 @@
 package ru.practicum.ewm.request.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.user.model.User;
@@ -9,8 +10,9 @@ import ru.practicum.ewm.user.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
-@EqualsAndHashCode(of = {"id"})
+@Getter
+@Setter
+@NoArgsConstructor
 @Accessors(chain = true)
 @Entity
 @Table(name = "requests")

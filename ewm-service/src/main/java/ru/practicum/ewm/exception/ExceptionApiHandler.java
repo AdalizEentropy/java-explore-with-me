@@ -1,6 +1,7 @@
 package ru.practicum.ewm.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -42,9 +43,9 @@ public class ExceptionApiHandler {
         return getErrorMessage(BAD_REQUEST, "Incorrectly made request.", message);
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({DataIntegrityViolationException.class, DataValidationException.class})
     @ResponseStatus(CONFLICT)
-    public ErrorMessage handleDataForbiddenException(final DataValidationException e) {
+    public ErrorMessage handleDataForbiddenException(final Exception e) {
         String message = Objects.requireNonNull(e.getMessage());
         log.warn(message);
 

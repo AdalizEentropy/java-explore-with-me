@@ -1,13 +1,17 @@
 package ru.practicum.ewm.user.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 
-@Data
-@EqualsAndHashCode(of = {"id"})
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 @Accessors(chain = true)
 @Entity
 @Table(name = "users")
