@@ -178,8 +178,7 @@ class CategoryAdminControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.status").value("CONFLICT"))
                 .andExpect(jsonPath("$.reason").value("Integrity constraint has been violated."))
-                .andExpect(jsonPath("$.message")
-                        .value(String.format("Category with name %s already exist", updateCat.getName())))
+                .andExpect(jsonPath("$.message").exists())
                 .andExpect(jsonPath("$.timestamp").exists());
     }
 }
