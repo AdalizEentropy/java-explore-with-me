@@ -11,11 +11,12 @@ import ru.practicum.ewm.common.PageParam;
 import ru.practicum.ewm.event.dao.EventRepository;
 import ru.practicum.ewm.event.dao.specification.EventAdminSpec;
 import ru.practicum.ewm.event.dto.EventFullRespDto;
+import ru.practicum.ewm.event.dto.EventRespDto;
 import ru.practicum.ewm.event.dto.UpdateEventAdminDto;
 import ru.practicum.ewm.event.mapper.EventMapper;
+import ru.practicum.ewm.event.model.AdminStateAction;
 import ru.practicum.ewm.event.model.Event;
 import ru.practicum.ewm.event.model.EventState;
-import ru.practicum.ewm.event.model.AdminStateAction;
 import ru.practicum.ewm.event.model.search.EventAdminParams;
 import ru.practicum.ewm.event.service.checker.EventChecker;
 import ru.practicum.ewm.exception.DataValidationException;
@@ -25,15 +26,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.practicum.ewm.common.PageParam.pageRequest;
+import static ru.practicum.ewm.event.model.AdminStateAction.PUBLISH_EVENT;
 import static ru.practicum.ewm.event.model.EventState.CANCELED;
 import static ru.practicum.ewm.event.model.EventState.PUBLISHED;
-import static ru.practicum.ewm.event.model.AdminStateAction.PUBLISH_EVENT;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class EventAdminServiceImpl implements EventAdminService {
     private static final Sort SORT_TYPE = Sort.by("id").descending();
+    private static final Sort SORT_FOLLOWERS = Sort.by("eventDate").descending();
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final EventChecker checker;
@@ -89,6 +91,24 @@ public class EventAdminServiceImpl implements EventAdminService {
 
     public List<Event> findEvents(List<Long> ids) {
         return eventRepository.findAllById(ids);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventRespDto> findEventsByInitiator(Long initiatorId, PageParam pageParam) {
+        var events = eventRepository.findByInitiator_IdAndState(initiatorId,
+                PUBLISHED, pageRequest(pageParam, SORT_FOLLOWERS));
+
+        log.debug("Events was found: {}", events);
+        return eventMapper.toEventsRespDto(events);
+    }
+
+    @Transactional(readOnly = true)
+    public List<EventRespDto> findEventsByInitiators(List<Long> initiatorsId, PageParam pageParam) {
+        var events = eventRepository.findByInitiatorsIdAndState(initiatorsId,
+                PUBLISHED, pageRequest(pageParam, SORT_FOLLOWERS));
+
+        log.debug("Events was found: {}", events);
+        return eventMapper.toEventsRespDto(events);
     }
 
     private static void changeStatus(AdminStateAction state, Event event) {

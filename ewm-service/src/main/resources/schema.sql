@@ -66,3 +66,15 @@ CREATE TABLE IF NOT EXISTS compilation_events (
     event_id BIGINT NOT NULL REFERENCES events (id),
     CONSTRAINT compilation_event_pk PRIMARY KEY (compilation_id, event_id)
 );
+
+CREATE TABLE IF NOT EXISTS subscriptions
+(
+    user_id   BIGINT NOT NULL,
+    follower_id BIGINT NOT NULL,
+    CONSTRAINT pk_subscriptions PRIMARY KEY (user_id, follower_id),
+    CONSTRAINT fk_user_to_users
+        FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_follower_to_users
+        FOREIGN KEY(follower_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT follower_user_pk UNIQUE (user_id, follower_id)
+);

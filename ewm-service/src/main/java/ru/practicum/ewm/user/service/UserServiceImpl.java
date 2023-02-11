@@ -11,6 +11,7 @@ import ru.practicum.ewm.common.PageParam;
 import ru.practicum.ewm.exception.DataValidationException;
 import ru.practicum.ewm.user.dao.UserRepository;
 import ru.practicum.ewm.user.dto.NewUserDto;
+import ru.practicum.ewm.user.dto.ShortUserDto;
 import ru.practicum.ewm.user.dto.UserRespDto;
 import ru.practicum.ewm.user.mapper.UserMapper;
 import ru.practicum.ewm.user.model.User;
@@ -69,6 +70,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public User getUserById(Long userId) {
         return findUserById(userId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ShortUserDto> getShortUsers(PageParam pageParam, List<Long> usersId) {
+        List<User> foundUsers = userRepository.findAllByUsersId(usersId, pageRequest(pageParam, SORT_TYPE));
+
+        log.debug("Users found: {}", foundUsers);
+        return userMapper.toShortUserDto(foundUsers);
     }
 
     private User findUserById(Long userId) {
