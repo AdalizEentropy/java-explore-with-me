@@ -1,6 +1,7 @@
 package ru.practicum.ewm.event.service.checker;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.ewm.category.service.CategoryService;
 import ru.practicum.ewm.event.dto.LocationDto;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class EventCheckerImpl implements EventChecker {
     private static final int HOURS_OFFSET = 2;
     private final CategoryService categoryService;
@@ -19,6 +21,7 @@ public class EventCheckerImpl implements EventChecker {
         if (categoryId != null && !categoryId.equals(event.getCategory().getId())) {
             var category = categoryService.getCategoryById(categoryId);
             event.setCategory(category);
+            log.debug("Event category was updated");
         }
     }
 
@@ -26,9 +29,11 @@ public class EventCheckerImpl implements EventChecker {
         if (locationDto != null) {
             if (!locationDto.getLon().equals(event.getLocation().getLon())) {
                 event.getLocation().setLon(locationDto.getLon());
+                log.debug("Event lon was updated");
             }
             if (!locationDto.getLat().equals(event.getLocation().getLat())) {
                 event.getLocation().setLat(locationDto.getLat());
+                log.debug("Event lat was updated");
             }
         }
     }

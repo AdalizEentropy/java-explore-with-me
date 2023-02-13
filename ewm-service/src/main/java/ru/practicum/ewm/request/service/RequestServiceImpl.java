@@ -37,8 +37,10 @@ public class RequestServiceImpl implements RequestService {
     public List<RequestRespDto> getRequests(Long userId) {
         // Check user
         userService.getUserById(userId);
+        var requests = requestRepository.findAllByRequester_Id(userId);
 
-        return mapper.toRequestsRespDto(requestRepository.findAllByRequester_Id(userId));
+        log.debug("Request founded: {}", requests);
+        return mapper.toRequestsRespDto(requests);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -70,6 +72,7 @@ public class RequestServiceImpl implements RequestService {
 
         var returnedRequest = requestRepository.save(request);
 
+        log.debug("Request saved: {}", returnedRequest);
         return mapper.toRequestRespDto(returnedRequest);
     }
 
@@ -81,12 +84,16 @@ public class RequestServiceImpl implements RequestService {
 
         request.setStatus(CANCELED);
 
+        log.debug("Request Id {} was canceled", requestId);
         return mapper.toRequestRespDto(request);
     }
 
     @Transactional(readOnly = true)
     public List<RequestRespDto> getEventRequests(Long userId, Long eventId) {
-        return mapper.toRequestsRespDto(requestRepository.findAllByEvent_Id(eventId));
+        var requests = requestRepository.findAllByEvent_Id(eventId);
+
+        log.debug("Request founded: {}", requests);
+        return mapper.toRequestsRespDto(requests);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -125,14 +132,17 @@ public class RequestServiceImpl implements RequestService {
                 throw new DataValidationException("Unexpected event status");
         }
 
+        log.debug("Request updated: {}", requests);
         return fillEventReqStatus(requests);
     }
 
     public List<RequestCount> getRequestCount(List<Long> eventId) {
+        log.debug("Get requests count for events {}", eventId);
         return requestRepository.findRequestCount(eventId, CONFIRMED);
     }
 
     public int getReqCount(Long eventId) {
+        log.debug("Get requests count for event {}", eventId);
         return requestRepository.countAllByEvent_IdAndStatus(eventId, CONFIRMED);
     }
 

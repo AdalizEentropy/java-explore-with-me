@@ -39,7 +39,6 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     public List<EventRespDto> getAll(EventParams eventParams, PageParam pageParam) {
-        log.info("Get views");
         log.debug("Get views with params: {}, {}", eventParams, pageParam);
         var sortType = Sort.by("eventDate").descending();
 
@@ -80,7 +79,6 @@ public class EventServiceImpl implements EventService {
 
     @Transactional(readOnly = true)
     public EventFullRespDto getById(Long id) {
-        log.info("Get view {}", id);
         Event event = eventRepository.findByIdAndState(id, PUBLISHED)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Published eventID %s does not exist",
                         id)));

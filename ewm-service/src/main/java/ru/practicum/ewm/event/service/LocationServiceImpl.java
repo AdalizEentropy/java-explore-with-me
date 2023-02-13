@@ -16,6 +16,8 @@ public class LocationServiceImpl implements LocationService {
     private final LocationMapper locationMapper;
 
     public Location addLocation(LocationDto locationDto) {
-        return locationRepository.save(locationMapper.toLocation(locationDto));
+        var location = locationRepository.save(locationMapper.toLocation(locationDto));
+        log.debug("Location saved: {}", location);
+        return location;
     }
 }

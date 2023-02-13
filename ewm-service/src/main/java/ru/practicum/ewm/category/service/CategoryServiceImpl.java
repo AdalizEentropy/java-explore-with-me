@@ -49,6 +49,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void removeCategory(Integer catId) {
         findCategoryById(catId);
         categoryRepository.deleteById(catId);
+        log.debug("Category Id {} was removed", catId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -56,6 +57,7 @@ public class CategoryServiceImpl implements CategoryService {
         var category = findCategoryById(catId);
         categoryMapper.updateCategoryFromDto(categoryReqDto, category);
 
+        log.debug("Category was updated: {}", category);
         return categoryMapper.toCategoryRespDto(category);
     }
 

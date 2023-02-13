@@ -53,14 +53,14 @@ public class SubscrServiceImpl implements SubscrService {
 
         var follower = userService.getUserById(followerId);
         Subscription subscr = subscrRepository.save(mapper.toSubscription(userId, follower));
-        log.info("Subscription from user {} to follower {} was added", userId, followerId);
+        log.debug("Subscription from user {} to follower {} was added", userId, followerId);
         return mapper.toSubscrDto(subscr);
     }
 
     @Transactional(rollbackFor = SQLException.class, isolation = Isolation.SERIALIZABLE)
     public void cancelSubscr(Long userId, Long followerId) {
         subscrRepository.deleteSubscr(userId, followerId);
-        log.info("Subscription from user {} to follower {} was removed", userId, followerId);
+        log.debug("Subscription from user {} to follower {} was removed", userId, followerId);
     }
 
     @Transactional(readOnly = true)

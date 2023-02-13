@@ -27,11 +27,13 @@ public class StatisticServiceImpl implements StatisticService {
     private String appName;
 
     public void addView(String uri, String ip) {
-        log.info("Sent a view to statistic");
+        log.debug("Sent a view to statistic");
+        log.trace("From uri {}, ip {}", uri, ip);
         statClient.addHit(createHitDtoReq(uri, ip));
     }
 
     public Long getViewCountsForOne(List<String> uris, LocalDateTime startTime) {
+        log.debug("Get count views from statistic for one uri");
         return this.getStat(uris, startTime)
                 .stream()
                 .filter(Objects::nonNull)
@@ -47,16 +49,23 @@ public class StatisticServiceImpl implements StatisticService {
         for (ViewStatsDtoResp view : views) {
             var id = PATTERN.matcher(view.getUri());
             if (id.find()) {
-                tmpViewsMap.put(Long.parseLong(id.group(0)), view.getHits());
+                var eventId = Long.parseLong(id.group(0));
+                if (tmpViewsMap.containsKey(eventId)) {
+                    var currentCount = tmpViewsMap.get(eventId);
+                    tmpViewsMap.put(eventId, currentCount + view.getHits());
+                } else {
+                    tmpViewsMap.put(eventId, view.getHits());
+                }
             }
         }
 
+        log.debug("Map of count views from statistic for one many uris: {}", tmpViewsMap);
         return tmpViewsMap;
     }
 
     private List<ViewStatsDtoResp> getStat(List<String> uris, LocalDateTime startTime) {
         var stat = statClient.getStat(createViewStatsDtoReq(uris, startTime));
-        log.info("Get views from statistic");
+        log.debug("Get views from statistic: {}", stat);
         return stat;
     }
 

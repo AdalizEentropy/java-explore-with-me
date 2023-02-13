@@ -54,6 +54,7 @@ public class CompilationServiceImpl implements CompilationService {
     public void deleteCompilation(Long compId) {
         findCompById(compId);
         compilationRepository.deleteById(compId);
+        log.debug("Compilation Id {} was removed", compId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -66,6 +67,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .collect(Collectors.toList());
         mapEventsData(eventsId, comp);
 
+        log.debug("Compilation updated: {}", comp);
         return mapper.toCompilationRespDto(comp);
     }
 

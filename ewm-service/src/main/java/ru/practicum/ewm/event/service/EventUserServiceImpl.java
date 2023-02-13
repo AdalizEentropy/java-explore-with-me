@@ -110,6 +110,7 @@ public class EventUserServiceImpl implements EventUserService {
         }
         eventMapper.updateEventFromDto(eventDto, event);
 
+        log.debug("Event updated: {}", event);
         return eventMapper.toEventFullRespDto(event);
     }
 

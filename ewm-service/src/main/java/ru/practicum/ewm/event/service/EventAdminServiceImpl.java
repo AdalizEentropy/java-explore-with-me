@@ -46,6 +46,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         List<Event> result = eventRepository.findAll(spec, pageRequest(pageParam, SORT_TYPE))
                 .toList();
 
+        log.debug("Events was founded: {}", result);
         return eventMapper.toEventsFullRespDto(result);
     }
 
@@ -78,6 +79,7 @@ public class EventAdminServiceImpl implements EventAdminService {
         // Update events
         eventMapper.updateEventFromDto(eventDto, event);
 
+        log.debug("Events was updated: {}", event);
         return eventMapper.toEventFullRespDto(event);
     }
 
